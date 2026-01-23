@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ bucket }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <h2>Bucket: {{ bucket }}</h2>
+    <a href="/">⬅ Back to Buckets</a>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <div class="card">
+        <h3>Upload File</h3>
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+            <input type="file" name="file" required>
+            <input type="hidden" name="bucket" value="{{ bucket }}">
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Create Folder</h3>
+        <form method="POST" action="/create-folder">
+            <input type="text" name="folder" placeholder="Folder name" required>
+            <input type="hidden" name="bucket" value="{{ bucket }}">
+            <button type="submit">Create</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Objects</h3>
+        <table>
+            <tr>
+                <th>Object Key</th>
+                <th>Action</th>
+            </tr>
+            {% for obj in objects %}
+            <tr>
+                <td>{{ obj.Key }}</td>
+                <td>
+                    <form method="POST" action="/delete-file" style="display:inline">
+                        <input type="hidden" name="bucket" value="{{ bucket }}">
+                        <input type="hidden" name="key" value="{{ obj.Key }}">
+                        <button type="submit" class="danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="card">
+        <h3>Copy / Move File</h3>
+        <form method="POST" action="/copy-move">
+            <input type="hidden" name="src_bucket" value="{{ bucket }}">
+
+            <input type="text" name="src_key" placeholder="Source key" required>
+            <input type="text" name="dest_bucket" placeholder="Destination bucket" required>
+            <input type="text" name="dest_key" placeholder="Destination key" required>
+
+            <select name="action">
+                <option value="copy">Copy</option>
+                <option value="move">Move</option>
+            </select>
+
+            <button type="submit">Execute</button>
+        </form>
+
+        <small>Example source key: <code>documents/file.txt</code></small>
+    </div>
+
+</div>
+</body>
+</html>

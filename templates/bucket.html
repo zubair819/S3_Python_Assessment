@@ -54,25 +54,52 @@
         </table>
     </div>
 
-    <div class="card">
-        <h3>Copy / Move File</h3>
-        <form method="POST" action="/copy-move">
-            <input type="hidden" name="src_bucket" value="{{ bucket }}">
+   <div class="card">
+    <h3>Copy / Move File</h3>
 
-            <input type="text" name="src_key" placeholder="Source key" required>
-            <input type="text" name="dest_bucket" placeholder="Destination bucket" required>
-            <input type="text" name="dest_key" placeholder="Destination key" required>
+    <form method="POST" action="/copy-move">
 
-            <select name="action">
-                <option value="copy">Copy</option>
-                <option value="move">Move</option>
-            </select>
+        <!-- Source bucket -->
+        <input type="hidden" name="src_bucket" value="{{ bucket }}">
 
-            <button type="submit">Execute</button>
-        </form>
+        <!-- Source file dropdown -->
+        <label>Source File</label><br>
+        <select name="src_key" required>
+            <option value="">-- Select file --</option>
+            {% for file in files %}
+                <option value="{{ file }}">{{ file }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-        <small>Example source key: <code>documents/file.txt</code></small>
-    </div>
+        <!-- Destination bucket dropdown -->
+        <label>Destination Bucket</label><br>
+        <select name="dest_bucket" required>
+            <option value="">-- Select bucket --</option>
+            {% for b in buckets %}
+                <option value="{{ b.Name }}">{{ b.Name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <!-- Destination path input -->
+        <label>Destination Path (folder/filename)</label><br>
+        <input type="text" name="dest_key" placeholder="e.g. documents/newfile.txt" required>
+        <br><br>
+
+        <!-- Action -->
+        <select name="action">
+            <option value="copy">Copy</option>
+            <option value="move">Move</option>
+        </select>
+
+        <button type="submit">Execute</button>
+
+        <p><small>Example: <code>documents/file.txt</code> or <code>file.txt</code></small></p>
+    </form>
+</div>
+
+
 
 </div>
 </body>

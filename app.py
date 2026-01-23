@@ -27,11 +27,28 @@ def create_bucket_route():
 @app.route("/bucket/<bucket_name>")
 def view_bucket(bucket_name):
     objects = list_objects(bucket_name)
+    buckets = list_buckets()
+
+    files = []
+    folders = []
+
+    for obj in objects:
+        key = obj["Key"]
+        if key.endswith("/"):
+            folders.append(key)
+        else:
+            files.append(key)
+
     return render_template(
         "bucket.html",
         bucket=bucket_name,
-        objects=objects
+        objects=objects,
+        files=files,
+        folders=folders,
+        buckets=buckets
     )
+
+
 
 @app.route("/upload", methods=["POST"])
 def upload():
@@ -79,15 +96,19 @@ def copy_move():
             move_object(src_bucket, src_key, dest_bucket, dest_key)
 
     except ValueError as e:
-        # Send error message back to UI
+        objects = list_objects(src_bucket)
         return render_template(
             "bucket.html",
             bucket=src_bucket,
-            objects=list_objects(src_bucket),
+            objects=objects,
+            files=[o["Key"] for o in objects if not o["Key"].endswith("/")],
+            folders=[o["Key"] for o in objects if o["Key"].endswith("/")],
+            buckets=list_buckets(),
             error=str(e)
         )
 
     return redirect(url_for("view_bucket", bucket_name=src_bucket))
+
 
 
 

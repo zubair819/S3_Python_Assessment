@@ -5,6 +5,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 <div class="container">
 
     <h2>Bucket: {{ bucket }}</h2>
@@ -16,9 +25,23 @@
 
     <div class="card">
         <h3>Upload File</h3>
+
         <form method="POST" action="/upload" enctype="multipart/form-data">
             <input type="file" name="file" required>
             <input type="hidden" name="bucket" value="{{ bucket }}">
+
+            <br><br>
+
+            <label>Select Folder (Optional)</label><br>
+            <select name="folder">
+                <option value="">(Root)</option>
+                {% for folder in folders %}
+                    <option value="{{ folder }}">{{ folder }}</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
             <button type="submit">Upload</button>
         </form>
     </div>
@@ -43,11 +66,21 @@
             <tr>
                 <td>{{ obj.Key }}</td>
                 <td>
-                    <form method="POST" action="/delete-file" style="display:inline">
-                        <input type="hidden" name="bucket" value="{{ bucket }}">
-                        <input type="hidden" name="key" value="{{ obj.Key }}">
-                        <button type="submit" class="danger">Delete</button>
-                    </form>
+
+                    {% if obj.Key.endswith('/') %}
+                        <!-- Folder delete -->
+                        <a href="/delete-folder/{{ bucket }}/{{ obj.Key }}">
+                            Delete Folder
+                        </a>
+                    {% else %}
+                        <!-- File delete -->
+                        <form method="POST" action="/delete-file" style="display:inline">
+                            <input type="hidden" name="bucket" value="{{ bucket }}">
+                            <input type="hidden" name="key" value="{{ obj.Key }}">
+                            <button type="submit" class="danger">Delete</button>
+                        </form>
+                    {% endif %}
+
                 </td>
             </tr>
             {% endfor %}

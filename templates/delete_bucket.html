@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Bucket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+
+    <div class="card">
+        <h3>Delete Bucket: {{ bucket }}</h3>
+
+        {% if not is_empty %}
+            <p style="color:red;">
+                ⚠️ This bucket is not empty. All files will be deleted.
+            </p>
+        {% else %}
+            <p>This bucket is empty.</p>
+        {% endif %}
+
+        <form method="POST" action="/delete-bucket">
+            <input type="hidden" name="bucket" value="{{ bucket }}">
+            <button type="submit" class="danger">Confirm Delete</button>
+        </form>
+
+        <br>
+        <a href="/">Cancel</a>
+    </div>
+
+</div>
+</body>
+</html>

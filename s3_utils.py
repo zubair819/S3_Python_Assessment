@@ -94,3 +94,46 @@ def move_object(src_bucket, src_key, dest_bucket, dest_key):
     copy_object(src_bucket, src_key, dest_bucket, dest_key)
     delete_object(src_bucket, src_key)
 
+
+def is_bucket_empty(bucket_name):
+    response = s3.list_objects_v2(Bucket=bucket_name)
+    return "Contents" not in response
+
+
+def delete_bucket_with_contents(bucket_name):
+    # Delete all objects first
+    response = s3.list_objects_v2(Bucket=bucket_name)
+
+    if "Contents" in response:
+        for obj in response["Contents"]:
+            s3.delete_object(Bucket=bucket_name, Key=obj["Key"])
+
+    # Now delete bucket
+    s3.delete_bucket(Bucket=bucket_name)
+
+def delete_folder(bucket_name, folder_prefix):
+    """
+    Deletes a folder and all its contents in S3.
+    """
+    response = s3.list_objects_v2(
+        Bucket=bucket_name,
+        Prefix=folder_prefix
+    )
+
+    if "Contents" in response:
+        for obj in response["Contents"]:
+            s3.delete_object(
+                Bucket=bucket_name,
+                Key=obj["Key"]
+            )
+def folder_has_files(bucket_name, folder_prefix):
+    response = s3.list_objects_v2(
+        Bucket=bucket_name,
+        Prefix=folder_prefix
+    )
+
+    if "Contents" not in response:
+        return False
+
+    # If more than 1 → contains files (not just folder itself)
+    return len(response["Contents"]) > 1

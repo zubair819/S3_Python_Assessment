@@ -89,3 +89,19 @@ th {
     margin-bottom: 10px;
     font-weight: bold;
 }
+
+.flash {
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+.flash.success {
+    background-color: #28a745;
+}
+
+.flash.error {
+    background-color: #dc3545;
+}
